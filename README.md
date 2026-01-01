@@ -59,6 +59,10 @@ Inside the React practice section you’ll find:
 - Forms and controlled components
 - `useEffect` basics
 - Folder structure best practices
+- Form validation with formik & yup
+- Bootstrap / reactstrap
+- Convert HTML to React
+- MUI (Material UI)
 
 ---
 
