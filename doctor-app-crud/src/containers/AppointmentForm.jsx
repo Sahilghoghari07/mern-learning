@@ -1,18 +1,25 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
-import React, { useState } from 'react'
-import { Button, Card, Col, Container, Form, FormGroup, Input, InputGroup, InputGroupText, Row } from 'reactstrap'
+import React, { useEffect, useState } from 'react'
+import { Button, Card, Container, Form, FormGroup, Input, InputGroup, InputGroupText } from 'reactstrap'
 import { useNavigate, useParams } from 'react-router-dom';
 
 function AppointmentForm() {
 
-    const [patients, setPatients] = useState(() => (
-        JSON.parse(localStorage.getItem("_appointment")) || []
-    ));
-    const [editPatients, setEditPatients] = useState(null);
+    const [patients, setPatients] = useState([]);
     const navigate = useNavigate();
-    const params = useParams 
-    ();
+    const { id } = useParams();
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem("_appointment")) || [];
+        setPatients(data);
+
+        if (id) {
+            const editData = data.find(p => p.id === Number(id));
+            if (editData) formik.setValues(editData);
+        }
+
+    }, [id]);
 
     const validationSchema = Yup.object({
         pname: Yup.string().required("Patient name is required"),
@@ -33,30 +40,30 @@ function AppointmentForm() {
             dept: "",
             appointmentDate: "",
             appointmentTime: "",
+            status: "Pending"
         },
         validationSchema,
-        onSubmit: (values, { resetForm }) => {
-            if (editPatients) {
-                setPatients(
-                    patients.map((patient) =>
-                        patient.id === editPatients.id ? { ...values, id: editPatients.id, status: editPatients.status } : patient
-                    )
-                );
-                setEditPatients(null);
+        onSubmit: (values) => {
+            let updated;
+
+            if (id) {
+                // If id match -> update data
+                updated = patients.map(patient => patient.id === Number(id) ? { ...values, id: Number(id) } : patient);
             } else {
-                setPatients([...patients, { ...values, id: Date.now(), status: "Pending" }]);
+                // Add data
+                updated = [...patients, { ...values, id: Date.now() }];
             }
 
-            navigate('/');
-            resetForm();
+            localStorage.setItem("_appointment", JSON.stringify(updated));
+            navigate("/");
         }
     });
 
     return (
         <>
             <Container className='w-50'>
-                <Card className='mt-3 py-4'>
-                    <h2 className='text-center mb-3'>{editPatients ? "Update Appointment" : "Add Appointment"}</h2>
+                <Card className='mt-4 p-4'>
+                    <h2 className='text-center mb-3'>{id ? "Update Appointment" : "Add Appointment"}</h2>
 
                     <Form className='w-75 m-auto' onSubmit={formik.handleSubmit}>
                         <FormGroup>
@@ -183,27 +190,9 @@ function AppointmentForm() {
                             )}
                         </FormGroup>
 
-                        <Row>
-                            <Col>
-                                <Button type='submit' color='primary' className='w-100'>
-                                    {editPatients ? "Update" : "Save"}
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button
-                                    type='button'
-                                    color='secondary'
-                                    className='w-100'
-                                    onClick={() => {
-                                        navigate('/');
-                                        formik.resetForm();
-                                        setEditPatients(null);
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </Col>
-                        </Row>
+                        <Button type='submit' color='primary' className='w-100'>
+                            {id ? "Update" : "Save"}
+                        </Button>
                     </Form>
                 </Card>
             </Container>
