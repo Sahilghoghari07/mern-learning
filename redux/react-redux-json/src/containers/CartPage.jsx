@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Chip, Container, Grid, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -76,6 +76,14 @@ const CartPage = () => {
                 >
                   {item.description}
                 </Typography>
+
+                <Chip
+                  label={item.category}
+                  size="small"
+                  color="secondary"
+                  sx={{ mt: 1, fontWeight: 500 }}
+                />
+
               </CardContent>
 
               <CardActions sx={{ px: 2, pb: 2 }}>
