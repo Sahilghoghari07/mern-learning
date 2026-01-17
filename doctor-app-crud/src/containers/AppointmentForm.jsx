@@ -19,7 +19,7 @@ function AppointmentForm() {
             if (editData) formik.setValues(editData);
         }
 
-    }, [id]);
+    }, [id, formik]);
 
     const validationSchema = Yup.object({
         pname: Yup.string().required("Patient name is required"),
